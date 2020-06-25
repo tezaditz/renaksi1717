@@ -23,3 +23,9 @@
 	<link rel="stylesheet" href="{{ asset('/css/atlantis2.css') }}">
 </head>
 <body>
+
+@include('layouts.header')
+@include('layouts.menu')
+		@yield('content')
+@include('layouts.footer')
+@include('layouts.plugin')

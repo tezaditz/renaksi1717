@@ -1,5 +1,5 @@
-@include('layouts.master')
-@include('layouts.header')
-@include('layouts.menu')
-@include('layouts.footer')
-@include('layouts.plugin')
+@extends('layouts.master')
+
+@section('content')
+    test content
+@stop
