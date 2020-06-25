@@ -1,0 +1,5 @@
+@include('layouts.master')
+@include('layouts.header')
+@include('layouts.menu')
+@include('layouts.footer')
+@include('layouts.plugin')
