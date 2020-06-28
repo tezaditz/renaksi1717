@@ -13,14 +13,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@homepage')->name('homepage');
 
-Auth::routes();
+// Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
+Route::get('login', 'AuthController@index')->name('login');
+Route::post('post-login', 'AuthController@postLogin'); 
+Route::get('register', 'AuthController@register');
+Route::post('post-register', 'AuthController@postRegister'); 
+Route::get('dashboard', 'AuthController@dashboard'); 
+Route::get('logout', 'AuthController@logout')->name('logout');
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
