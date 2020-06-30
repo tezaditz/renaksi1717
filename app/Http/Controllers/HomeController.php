@@ -34,7 +34,7 @@ class HomeController extends Controller
                 ->select('menu_items.id as id' , 'menu_items.url as url' , 'menu_items.title as title' , 'menu_items.parent_id as parent_id')
                 ->get();
 
-        $data['posts'] = DB::table('posts')->where('status' , 'PUBLISHED')->OrderBy('created_at' , 'desc')->get();
+        $data['posts'] = DB::table('posts')->where('status' , 'PUBLISHED')->OrderBy('created_at' , 'desc')->paginate(2);
 
 
         return view('welcome' , compact('data'));
@@ -56,7 +56,7 @@ class HomeController extends Controller
                            ->select('menu_items.id as id' , 'menu_items.url as url' , 'menu_items.title as title' , 'menu_items.parent_id as parent_id')
                            ->get();
         
-        $data['posts'] = DB::table('posts')->where('status' , 'PUBLISHED')->OrderBy('created_at' , 'desc')->get();
+        $data['posts'] = DB::table('posts')->where('status' , 'PUBLISHED')->OrderBy('created_at' , 'desc')->paginate(2);
         
  
         return view('welcome' , compact('data'));

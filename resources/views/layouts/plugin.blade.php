@@ -68,4 +68,4 @@
 	<!-- Atlantis JS -->
 	<script src="{{ asset('/js/atlantis2.min.js') }}"></script>
 
-	<script src="{ asset('js/demo.js'}"></script>
+	<!-- <script src="{ asset('js/demo.js'}"></script> -->

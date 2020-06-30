@@ -20,5 +20,9 @@
         </div>
     </div>
     @endforeach
+    <div class="center">
+        {{ $data['posts']->links() }}
+    </div>
+    
 </div>
 @stop
