@@ -24,6 +24,7 @@
 										
 									</a>
 								</li>
+
 								@endguest
 								@auth
 								<li class="nav-item dropdown hidden-caret">

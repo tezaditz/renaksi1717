@@ -21,26 +21,12 @@
 
 	<!-- CSS Files -->
 	<link rel="stylesheet" href="{{ asset('/css/bootstrap.min.css') }}">
-	<link rel="stylesheet" href="{{ asset('/css/atlantis2.css') }}">
+	<link rel="stylesheet" href="{{ asset('/css/atlantis.css') }}">
 
 	<!-- CSS Just for demo purpose, don't include it in your project -->
 	<!-- <link rel="stylesheet" href="{{ asset('/css/demo.css') }}"> -->
 </head>
 <!-- Head -->
-<body data-background-color="custom" custom-background="{{ asset('/img/bg_gradient2.png') }}">
-	<div class="wrapper horizontal-layout-3 fullwidth-style">
-		<div class="main-header no-box-shadow" data-background-color="transparent">
-
-			@include('layouts.navtop')
-			
-			<div class="main-panel">
-				
-					@include('layouts.page_header')
-					@yield('content')
-
-			</div>
-			@include('layouts.footer')
-		</div>
-	@include('layouts.plugin')
-</body>
+@yield('content')
+@include('layouts.plugin')
 </html>

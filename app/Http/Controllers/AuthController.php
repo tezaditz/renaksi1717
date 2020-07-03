@@ -7,6 +7,7 @@ Use App\User;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 use Session;
+use DB;
 
 class AuthController extends Controller
 {
@@ -22,17 +23,40 @@ class AuthController extends Controller
      
     public function postLogin(Request $request)
     {
-        request()->validate([
-        'email' => 'required',
-        'password' => 'required',
+
+        $validator = Validator::make($request->all(), [
+            // 'email' => 'required|email|exists:'.config('crudbooster.USER_TABLE'),
+            'name'=> 'required',
+            'password' => 'required',
         ]);
- 
-        $credentials = $request->only('email', 'password');
+
+        if ($validator->fails()) {
+            $message = $validator->errors()->all();
+
+            return redirect()->back()->with(['message' => implode(', ', $message), 'message_type' => 'danger']);
+        }
+
+        $name = $request->input("name");
+        $password = $request->input("password");
+        // $year = Request::input("year");
+        // $users = DB::table(config('crudbooster.USER_TABLE'))->where("email", $email)->first();
+        $users = DB::table('users')->where("name", $name)->first();
+
+        $credentials = $request->only('name', 'password');
         if (Auth::attempt($credentials)) {
             // Authentication passed...
-            return redirect()->intended('dashboard');
+            return redirect()->intended('/');
         }
-        return Redirect::to("login")->withSuccess('Oppes! You have entered invalid credentials');
+
+        // if (\Hash::check($password, $users->password)) {
+                       
+
+        //     // return redirect('/');
+        //     return 'OK';
+        // } else {
+        //     // return redirect()->route('getLogin')->with('message', trans('crudbooster.alert_password_wrong'));
+        //     return 'NOT OK';
+        // }
     }
  
     public function postRegister(Request $request)

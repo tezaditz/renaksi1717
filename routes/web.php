@@ -19,7 +19,7 @@ Route::get('/', 'HomeController@homepage')->name('homepage');
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('login', 'AuthController@index')->name('login');
-Route::post('post-login', 'AuthController@postLogin'); 
+Route::post('post-login', 'AuthController@postLogin')->name('post-login'); 
 Route::get('register', 'AuthController@register');
 Route::post('post-register', 'AuthController@postRegister'); 
 Route::get('dashboard', 'AuthController@dashboard'); 
