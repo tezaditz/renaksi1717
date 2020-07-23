@@ -18,7 +18,7 @@
 
 
         <div class='main-menu'>
-        {{CRUDBooster::sidebarMenu()}}
+        
             <!-- Sidebar Menu -->
             <ul class="sidebar-menu">
                 <li class="header">{{trans("crudbooster.menu_navigation")}}</li>
