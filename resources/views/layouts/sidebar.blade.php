@@ -4,42 +4,44 @@
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
 
+    @if(CRUDBooster::myid())
+
+    
         <!-- Sidebar user panel (optional) -->
-        <!-- <div class="user-panel">
+        <div class="user-panel">
             <div class="pull-{{ trans('crudbooster.left') }} image">
                 <img src="{{ CRUDBooster::myPhoto() }}" class="img-circle" alt="{{ trans('crudbooster.user_image') }}"/>
             </div>
             <div class="pull-{{ trans('crudbooster.left') }} info">
-                <p>{{ CRUDBooster::myName() }}</p> -->
+                <p>{{ CRUDBooster::myName() }}</p>
                 <!-- Status -->
-                <!-- <a href="#"><i class="fa fa-circle text-success"></i> {{ trans('crudbooster.online') }}</a>
+                <a href="#"><i class="fa fa-circle text-success"></i> {{ trans('crudbooster.online') }}</a>
             </div>
-        </div> -->
+        </div>
+        @endif
 
 
         <div class='main-menu'>
-        
+
             <!-- Sidebar Menu -->
             <ul class="sidebar-menu">
                 <li class="header">{{trans("crudbooster.menu_navigation")}}</li>
                 <!-- Optionally, you can add icons to the links -->
 
                 <?php $dashboard = CRUDBooster::sidebarDashboard();?>
-                <!-- @if($dashboard)
+                @if($dashboard)
                     <li data-id='{{$dashboard->id}}' class="{{ (Request::is(config('crudbooster.ADMIN_PATH'))) ? 'active' : '' }}"><a
                                 href='{{CRUDBooster::adminPath()}}' class='{{($dashboard->color)?"text-".$dashboard->color:""}}'><i class='fa fa-dashboard'></i>
                             <span>{{trans("crudbooster.text_dashboard")}}</span> </a></li>
-                @endif -->
-              
+                @endif
+
                 @foreach(CRUDBooster::sidebarMenu() as $menu)
-                
                     <li data-id='{{$menu->id}}' class='{{(!empty($menu->children))?"treeview":""}} {{ (Request::is($menu->url_path."*"))?"active":""}}'>
                         <a href='{{ ($menu->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$menu->url }}'
                            class='{{($menu->color)?"text-".$menu->color:""}}'>
                             <i class='{{$menu->icon}} {{($menu->color)?"text-".$menu->color:""}}'></i> <span>{{$menu->name}}</span>
                             @if(!empty($menu->children))<i class="fa fa-angle-{{ trans("crudbooster.right") }} pull-{{ trans("crudbooster.right") }}"></i>@endif
                         </a>
-                       
                         @if(!empty($menu->children))
                             <ul class="treeview-menu">
                                 @foreach($menu->children as $child)

@@ -18,10 +18,11 @@ class CreateNews extends Migration
             $table->string("title");
             $table->longText("content");
             $table->boolean("is_active")->default(1);
-            $table->foreignId('category_id')->constrained("category")->onDelete('cascade');
+            $table->unsignedInteger('category_id');
             $table->timestamps();
 
             $table->primary("uuid");
+            $table->foreign('category_id')->references('id')->on('category');
         });
     }
 

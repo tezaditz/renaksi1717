@@ -4,15 +4,13 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use Illuminate\Support\Str;
 
-
-	class AdminPostsController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminCategoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "title";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
@@ -27,36 +25,22 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "posts";
+			$this->table = "category";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Thumbnail","name"=>"thumbnail","image"=>true];
-			$this->col[] = ["label"=>"Category","name"=>"category_id","join"=>"category,id"];
-			$this->col[] = ["label"=>"Url","name"=>"url"];
-			$this->col[] = ["label"=>"Title","name"=>"title"];
-			$this->col[] = ["label"=>"Content","name"=>"content"];
-			$this->col[] = ["label"=>"Show In Dashboard","name"=>"show_in_dashboard"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Uraian","name"=>"uraian"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Thumbnail','name'=>'thumbnail','type'=>'upload','validation'=>'image|max:3000','width'=>'col-sm-10','help'=>'File types support : JPG, JPEG, PNG, GIF, BMP'];
-			$this->form[] = ['label'=>'Category','name'=>'category_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'category,id','datatable_format'=>'uraian'];
-			$this->form[] = ['label'=>'Title','name'=>'title','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Content','name'=>'content','type'=>'wysiwyg','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Show In Dashboard','name'=>'show_in_dashboard','type'=>'checkbox','validation'=>'required','width'=>'col-sm-10','dataenum'=>'Yes'];
+			$this->form[] = ['label'=>'Uraian','name'=>'uraian','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Thumbnail','name'=>'thumbnail','type'=>'upload','validation'=>'image|max:3000','width'=>'col-sm-10','help'=>'File types support : JPG, JPEG, PNG, GIF, BMP'];
-			//$this->form[] = ['label'=>'Category','name'=>'category_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'category,id','datatable_format'=>'uraian'];
-			//$this->form[] = ['label'=>'Title','name'=>'title','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Content','name'=>'content','type'=>'wysiwyg','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
-			//$this->form[] = ['label'=>'Show In Dashboard','name'=>'show_in_dashboard','type'=>'checkbox','validation'=>'required','width'=>'col-sm-10','dataenum'=>'Yes'];
+			//$this->form[] = ["label"=>"Uraian","name"=>"uraian","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			# OLD END FORM
 
 			/* 
@@ -266,12 +250,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$postdata['id'] = Str::uuid()->getHex();
-			$name = DB::table('cms_users')->where('id' , CRUDBooster::MyId())->first();
-			$postdata['created_by'] = $name->name;
-			$category = DB::table('category')->where('id' , $postdata['category_id'])->first();
 
-			$postdata['url'] = '/' . $category->uraian . '/' . $postdata['id'] . '/' . $postdata['title'];
 	    }
 
 	    /* 

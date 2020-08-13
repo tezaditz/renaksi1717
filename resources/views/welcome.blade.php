@@ -2,6 +2,6 @@
 
 @section('content')
     
-@include('posts.list')
+@include('beranda.index')
 
 @endsection
