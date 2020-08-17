@@ -200,7 +200,7 @@
 </div><!-- ./wrapper -->
 
 
-@include('crudbooster::admin_template_plugins')
+@include('layouts.plugins')
 
 <!-- load js -->
 @if($load_js)

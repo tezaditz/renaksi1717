@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Khill\Lavacharts\Lavacharts;
+use App\Models\peta;
 use DB;
 
 class HomeController extends Controller
@@ -23,18 +25,11 @@ class HomeController extends Controller
                                             ->where('show_in_dashboard' , 'Yes')
                                             ->orderby('created_at' , 'desc')
                                             ->get();
+  
         
-        $data['menu']   = DB::table('menu')
-        ->join('cms_menus' , 'menu.cms_menu_id' , 'cms_menus.id')
-        ->get();
-        $idParent = [];
-        foreach ($data['menu'] as $key => $value) {
-            $idParent[] = $value->id;
-        }
-
-        $data['menu_child'] = DB::table('cms_menus')->wherein('parent_id' , $idParent)->get();
-        // return Count($data['berita']);
-        return view('welcome' , compact('data'));
+        
+        // return $data;
+        return view('beranda.index' , $data);
     }
 
     /**
