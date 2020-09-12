@@ -5,7 +5,7 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminMasterRoadmapController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +25,24 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "master_roadmap";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"Zat Aktif Id","name"=>"zat_aktif_id","join"=>"zat_aktif,nama"];
+			
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'Zat Aktif','name'=>'zat_aktif_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'zat_aktif,nama'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ["label"=>"Zat Aktif Id","name"=>"zat_aktif_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"zat_aktif,nama"];
+			
 			# OLD END FORM
 
 			/* 
@@ -59,7 +58,7 @@
 	        | 
 	        */
 	        $this->sub_module = array();
-
+			$this->sub_module[] = ['label'=>'Detail Roadmap','path'=>'detail_roadmap28','parent_columns'=>'zat_aktif_nama','foreign_key'=>'master_roadmap_id','button_color'=>'success','button_icon'=>'fa fa-bars'];
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -110,7 +109,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			$this->index_button[] = ['label'=>'Pelaporan','url'=>'/bbo/pelaporan',"icon"=>"fa fa-file-text-o"];
 
 
 	        /* 
@@ -231,7 +230,7 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-	            
+	        $query->where('zat_aktif_id' ,  Session::get('zataktifid'))->where('id_cms_users' , CRUDBooster::myId());
 	    }
 
 	    /*
@@ -253,12 +252,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
+			
 	    }
 
 	    /* 
@@ -270,7 +264,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			
+
 	    }
 
 	    /* 
@@ -283,11 +277,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -312,9 +301,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 

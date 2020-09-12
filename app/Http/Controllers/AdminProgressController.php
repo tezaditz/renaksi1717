@@ -5,7 +5,7 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminProgressController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +25,32 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "pelaporan_progres";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"Tanggal","name"=>"tanggal"];
+			$this->col[] = ["label"=>"Uraian","name"=>"uraian"];
+			$this->col[] = ["label"=>"Jml Proses","name"=>"jml_proses"];
+			$this->col[] = ["label"=>"Jml Hasil","name"=>"jml_hasil"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'Tanggal','name'=>'tanggal','type'=>'date','validation'=>'required|date','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Uraian','name'=>'uraian','type'=>'wysiwyg','validation'=>'required|string','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Jml Proses','name'=>'jml_proses','type'=>'money','validation'=>'required|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Jml Hasil','name'=>'jml_hasil','type'=>'money','validation'=>'required|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Pelaporan Id','name'=>'pelaporan_id','type'=>'hidden','validation'=>'required','width'=>'col-sm-9'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ['label'=>'Tanggal','name'=>'tanggal','type'=>'date','validation'=>'required|date','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Uraian','name'=>'uraian','type'=>'wysiwyg','validation'=>'required|string','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Jml Proses','name'=>'jml_proses','type'=>'money','validation'=>'required|min:0','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Jml Hasil','name'=>'jml_hasil','type'=>'money','validation'=>'required|min:0','width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 
@@ -253,12 +260,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
+			// $postdata['pelaporan_id'] = $_GET['parent_id'];
 	    }
 
 	    /* 
@@ -270,7 +272,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			
+
 	    }
 
 	    /* 
@@ -283,11 +285,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -312,9 +309,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 

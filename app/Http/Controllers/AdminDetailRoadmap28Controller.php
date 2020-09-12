@@ -5,7 +5,7 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminDetailRoadmap28Controller extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +25,34 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "detail_roadmap";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"Tahun","name"=>"tahun_id","join"=>"tahun,thn"];
+			$this->col[] = ["label"=>"Triwulan","name"=>"triwulan_id","join"=>"triwulan,uraian"];
+			$this->col[] = ["label"=>"Ringkasan","name"=>"ringkasan"];
+			$this->col[] = ["label"=>"Uraian","name"=>"uraian"];
+			$this->col[] = ["label"=>"master_roadmap_id","name"=>"master_roadmap_id","visible"=>false];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'Tahun','name'=>'tahun_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'tahun,id','datatable_format'=>'thn'];
+			$this->form[] = ['label'=>'Triwulan','name'=>'triwulan_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'triwulan,id','datatable_format'=>'uraian'];
+			$this->form[] = ['label'=>'Ringkasan','name'=>'ringkasan','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Uraian','name'=>'uraian','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'master_roadmap_id','name'=>'master_roadmap_id','type'=>'hidden','validation'=>'required','width'=>'col-sm-10'];
+			
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ['label'=>'Tahun','name'=>'tahun_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Triwulan','name'=>'triwulan_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'triwulan,id','datatable_format'=>'uraian'];
+			//$this->form[] = ['label'=>'Ringkasan','name'=>'ringkasan','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Uraian','name'=>'uraian','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 
@@ -231,7 +240,8 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-	            
+			// $a = $_GET['parent_id'];
+			// dd($a);
 	    }
 
 	    /*
@@ -252,13 +262,8 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
+			
+			$postdata['master_roadmap_id'] = Session::get('masterroadmapid');
 	    }
 
 	    /* 
@@ -283,11 +288,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -312,9 +312,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 
@@ -327,7 +325,41 @@
 	    public function hook_after_delete($id) {
 	        //Your code here
 
-	    }
+		}
+		
+		public function getAdd(){
+			$data = [];
+			
+			
+			$data['page_title'] = "Tambah Detail Roadmap";
+			$data['tahun'] = DB::table('tahun')->get();
+			$data['triwulan'] = DB::table('triwulan')->get();
+			$data['master_roadmap_id'] = $_GET['parent_id'];
+			$this->cbView('roadmap.add' , $data);
+		}
+
+		public function simpanRoadmap(){
+			$data = Request::all();
+			// dd($data);
+			if($data){
+				$a = DB::table('detail_roadmap')->where('master_roadmap_id' , $data['master_roadmap_id'])->where('tahun_id' , $data['tahun_id'])->where('triwulan_id' , $data['triwulan_id'])->get();
+				if(!$a){
+					$insert = [];
+					$insert['master_roadmap_id'] = $data['master_roadmap_id'];
+					$insert['tahun_id'] = $data['master_roadmap_id'];
+					$insert['triwulan_id'] = $data['triwulan_id'];
+					$insert['ringkasan'] = $data['ringkasan'];
+					$insert['uraian'] = $data['uraian'];
+					DB::table('detail_roadmap')->insert($insert);
+
+					CRUDBooster::redirect($data['return_url'] , 'Roadmap Berhasil diTambahkan !!' , 'info');
+				}else{
+					CRUDBooster::redirect($data['return_url'] , 'Sudah Tersedia Roadmap pada periode ini!!' , 'info');
+				}
+			}
+
+			
+		}
 
 
 

@@ -4,8 +4,9 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use Carbon\carbon;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminDetailPelaporanController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +26,51 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "detail_pelaporan";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"Tanggal","name"=>"tanggal"];
+			$this->col[] = ["label"=>"Permasalahan Sebelumnya","name"=>"permasalahan_sebelumnya"];
+			$this->col[] = ["label"=>"Rekomendasi","name"=>"rekomendasi"];
+			$this->col[] = ["label"=>"Capaian","name"=>"capaian"];
+			$this->col[] = ["label"=>"Masalah","name"=>"masalah"];
+			$this->col[] = ["label"=>"Rencana Tindaklanjut","name"=>"rencana_tindaklanjut"];
+			$this->col[] = ["label"=>"Hasil Tindaklanjut","name"=>"hasil_tindaklanjut"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'Pelaporan Id','name'=>'pelaporan_id','type'=>'hidden','validation'=>'required','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Tanggal','name'=>'tanggal','type'=>'date','validation'=>'required|date','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Permasalahan Sebelumnya','name'=>'permasalahan_sebelumnya','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Rekomendasi / Penyelesaian / Hasil Diskusi','name'=>'rekomendasi','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Capaian Saat Ini','name'=>'capaian','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Permasalahan saat ini','name'=>'masalah','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Rencana Tindaklanjut','name'=>'rencana_tindaklanjut','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Hasil Tindaklanjut','name'=>'hasil_tindaklanjut','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ['label'=>'Pelaporan Id','name'=>'pelaporan_id','type'=>'hidden','validation'=>'required','width'=>'col-sm-10'];
+			//// $this->form[] = ['label'=>'Target Hilirisasi Id','name'=>'target_hilirisasi_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'target_hilirisasi,id'];
+			//// $this->form[] = ['label'=>'Master Roadmap Id','name'=>'master_roadmap_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'master_roadmap,id'];
+			//$this->form[] = ['label'=>'Tanggal','name'=>'tanggal','type'=>'date','validation'=>'required|date','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Permasalahan Sebelumnya','name'=>'permasalahan_sebelumnya','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Rekomendasi / Penyelesaian / Hasil Diskusi','name'=>'rekomendasi','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Capaian Saat Ini','name'=>'capaian','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Permasalahan saat ini','name'=>'masalah','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			//$this->form[] = ['label'=>'Rencana Tindaklanjut','name'=>'rencana_tindaklanjut','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//$this->form[] = ['label'=>'Hasil Tindaklanjut','name'=>'hasil_tindaklanjut','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
 			# OLD END FORM
 
 			/* 
@@ -253,12 +280,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
+			$postdata['tanggal'] = Carbon::now();
 	    }
 
 	    /* 
@@ -270,7 +292,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			
+
 	    }
 
 	    /* 
@@ -283,11 +305,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -312,9 +329,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 
@@ -329,6 +344,53 @@
 
 	    }
 
+		public function getAdd(){
+			// dd('test');
+			$data=[];
+			// $a = DB::table('cms_users')->where('id' , CRUDBooster::myId())->first();
+			// $b = DB::table('pelaporan')->where('id' , $id)->first();
+			// $userelic = $a->username;
+			// // return $userelic;
+			// $data['company'] = DB::table('perusahaan')->where('user_elic',$userelic)->first();
+			// $dataLogin = DB::table('cms_users')->where('id' , CRUDBooster::myId())->first();
+			// $dataPerusahaan = DB::table('perusahaan')->where('user_elic' , $dataLogin->username)->first();
+
+			// $roadmap_master = DB::table('master_roadmap')->where('zat_aktif_id' , $b->zat_aktif_id)
+			// 											 ->where('id_cms_users' , CRUDBooster::myId())
+			// 											 ->first();
+			// 										// return $roadmap_master->id;
+			// $data['roadmap'] = DB::table('detail_roadmap')
+			// ->join('tahun' , 'detail_roadmap.tahun_id' , 'tahun.id')
+			// ->join('triwulan' , 'triwulan.id' , 'detail_roadmap.triwulan_id')
+			// ->select('triwulan.uraian as Triwulan' , 'tahun.thn as Tahun' , 'detail_roadmap.ringkasan as Ringkasan')
+			// ->where('master_roadmap_id' , $roadmap_master->id)->get();
+
+			// $data['target_hilirisasi'] = DB::table('target_hilirisasi')
+			// ->join('bulan' , 'target_hilirisasi.bulan_id' , 'bulan.id')
+			// ->join('tahun' , 'target_hilirisasi.tahun_id' , 'tahun.id')
+			// ->select('tahun.thn as Tahun' , 'bulan.uraian as Bulan')
+			// ->where('zat_aktif_id' , $b->zat_aktif_id)
+			// ->where('perusahaan_id' , $b->perusahaan_id)->get();
+
+			// $a = DB::table('zat_aktif')->where('id' , $b->zat_aktif_id)->first();
+			// $data['nama_bahan_baku'] = $a->nama;
+			$data['tanggal_isi'] = Carbon::now();
+
+			// cek apa sudah ada record sebelumnya.
+			$a = DB::table('detail_pelaporan')->where('pelaporan_id' , $id)->get();
+			if($a){
+				$data['valuedisable'] = true;
+			}else{$data['valuedisable'] = false;}
+
+			$data['pelaporanid'] = $_GET['parent_id'];
+			// dd($data['pelaporanid']);
+			$this->cbView('pelaporan.detail' , $data);
+		}
+
+		// public function postAddSave(){
+		// 	$data = Request::all();
+		// 	dd($data);
+		// }
 
 
 	    //By the way, you can still create your own method in here... :) 

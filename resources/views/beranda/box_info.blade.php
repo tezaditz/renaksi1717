@@ -1,0 +1,3 @@
+<div class="alert alert-info">
+  <strong>Selamat Datang!</strong> Website ini merupakan portal untuk......
+</div>

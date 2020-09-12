@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use DB;
 use Session;
 use Request;
+use CRUDBooster;
 
 class CBHook extends Controller {
 
@@ -14,6 +15,6 @@ class CBHook extends Controller {
 	|
 	*/
 	public function afterLogin() {
-		
+	
 	}
 }

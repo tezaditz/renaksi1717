@@ -5,7 +5,7 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminTargetHilirisasiController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +25,31 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "target_hilirisasi";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"Zat Aktif","name"=>"zat_aktif_id","join"=>"zat_aktif,nama"];
+			$this->col[] = ["label"=>"Perusahaan","name"=>"perusahaan_id","join"=>"perusahaan,nama"];
+			$this->col[] = ["label"=>"Tahun","name"=>"tahun_id","join"=>"tahun,id"];
+			$this->col[] = ["label"=>"Bulan","name"=>"bulan_id","join"=>"bulan,uraian"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'Zat Aktif','name'=>'zat_aktif_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'zat_aktif,id','datatable_format'=>'nama'];
+			$this->form[] = ['label'=>'Perusahaan','name'=>'perusahaan_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'perusahaan,id','datatable_format'=>'nama'];
+			$this->form[] = ['label'=>'Tahun','name'=>'tahun_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'tahun,id','datatable_format'=>'thn'];
+			$this->form[] = ['label'=>'Bulan','name'=>'bulan_id','type'=>'select','validation'=>'required','width'=>'col-sm-9','datatable'=>'bulan,id','datatable_format'=>'uraian'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ['label'=>'Zat Aktif Id','name'=>'zat_aktif_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'zat_aktif,nama'];
+			//$this->form[] = ['label'=>'Perusahaan Id','name'=>'perusahaan_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'perusahaan,nama'];
+			//$this->form[] = ['label'=>'Tahun Id','name'=>'tahun_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'tahun,id','datatable_format'=>'thn'];
+			//$this->form[] = ['label'=>'Triwulan Id','name'=>'triwulan_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'triwulan,id','datatable_format'=>'uraian'];
 			# OLD END FORM
 
 			/* 
@@ -253,12 +259,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
+			unset($postdata['triwulan_id']);
 	    }
 
 	    /* 
@@ -269,8 +270,18 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        //Your code here
+			//Your code here
 			
+			Session::forget('idpelaporan');
+
+			$data = DB::table('target_hilirisasi')->where('id' , $id)->first();
+			DB::table('pelaporan')->where('id_cms_users' , CRUDBooster::myId())
+								->where('zat_aktif_id' , $data->zat_aktif_id)
+								->update(['target_flag' => 1]);
+
+
+
+			CRUDBooster::redirect('/bbo/pelaporan',"Target Hilirisasi Berhasil diBuat","info");
 	    }
 
 	    /* 
@@ -283,12 +294,7 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
+			unset($postdata['triwulan_id']);
 	    }
 
 	    /* 
@@ -312,9 +318,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 
@@ -327,7 +331,34 @@
 	    public function hook_after_delete($id) {
 	        //Your code here
 
-	    }
+		}
+		
+		public function getAdd($idPelaporan = null){
+			$data = [];
+			$data['page_title'] = 'Add Target Hilirisasi';
+
+			$pelaporan = DB::table('pelaporan')->where('id' , $idPelaporan)->first();
+			// Session::put('idPelaporan' , $id);
+			// Session::put('idbahanbaku' , $pelaporan->zat_aktif_id);
+			// Session::put('idperusahaan' , $pelaporan->perusahaan_id);
+
+			$zat_aktif = DB::table('zat_aktif')->where('id' , $pelaporan->zat_aktif_id)->first();
+			// return $zat_aktif->nama;
+			$data['zat_aktif_id'] = $zat_aktif->id;
+			$data['zat_aktif_nama'] = $zat_aktif->nama;
+
+			$perusahaan = DB::table('perusahaan')->where('id' , $pelaporan->perusahaan_id)->first();
+			// return $perusahaan->nama;
+			$data['perusahaan_id'] = $perusahaan->id;
+			$data['perusahaan_nama'] = $perusahaan->nama;
+
+			$data['tahun'] = DB::table('tahun')->get();
+			$data['bulan']	= DB::table('bulan')->get();
+			
+
+			$this->cbView('target_hilirisasi.add' , $data);
+		}
+
 
 
 

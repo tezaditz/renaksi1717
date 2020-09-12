@@ -13,7 +13,7 @@
                    </h4> 
                    <h6>                    
                         <small>
-                            <p class="text-muted">{{ $beritas->created_by }} , {{ date('d-M-Y H:i:s' , strtotime($beritas->created_at)) }}</p>
+                            <p class="text-muted">{{ $beritas->created_by }} , {{ \Carbon\Carbon::parse($beritas->created_at)->diffForHumans() }}</p>
                         </small>
                     </h6>
                 </div>

@@ -16,6 +16,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        // return 'A';
         $data['berita'] = DB::table('posts')->where('category_id' , 4)
                                             ->where('show_in_dashboard' , 'Yes')
                                             ->orderby('created_at' , 'desc')

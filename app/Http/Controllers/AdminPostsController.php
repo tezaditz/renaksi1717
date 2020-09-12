@@ -33,7 +33,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Thumbnail","name"=>"thumbnail","image"=>true];
-			$this->col[] = ["label"=>"Category","name"=>"category_id","join"=>"category,id"];
+			$this->col[] = ["label"=>"Category","name"=>"category_id","join"=>"category,uraian"];
 			$this->col[] = ["label"=>"Url","name"=>"url"];
 			$this->col[] = ["label"=>"Title","name"=>"title"];
 			$this->col[] = ["label"=>"Content","name"=>"content"];

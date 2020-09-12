@@ -176,7 +176,10 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         crocodicstudio\crudbooster\CRUDBoosterServiceProvider::class,
-        Khill\Lavacharts\Laravel\LavachartsServiceProvider::class
+        Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
+
+        Collective\Html\HtmlServiceProvider::class,
+        PrettyRoutes\ServiceProvider::class,
 
     ],
 

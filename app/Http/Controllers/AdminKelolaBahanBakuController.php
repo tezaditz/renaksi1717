@@ -4,8 +4,9 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use Carbon\carbon;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminKelolaBahanBakuController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +26,22 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "kelola_bahan_baku";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"Zat Aktif","name"=>"zat_aktif_id","join"=>"zat_aktif,nama"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'Zat Aktif','name'=>'zat_aktif_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'zat_aktif,id','datatable_format'=>'nama'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ['label'=>'Zat Aktif Id','name'=>'zat_aktif_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'zat_aktif,id','datatable_where'=>'nama'];
 			# OLD END FORM
 
 			/* 
@@ -231,7 +229,7 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-	            
+	            $query->where('id_cms_users' , CRUDBooster::myId());
 	    }
 
 	    /*
@@ -253,13 +251,8 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
-
-	    }
+			$postdata['id_cms_users'] = CRUDBooster::myId();
+ 	    }
 
 	    /* 
 	    | ---------------------------------------------------------------------- 
@@ -269,8 +262,10 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        //Your code here
-			
+			//Your code here
+			$this->create_pelaporan($id);
+			$this->create_menu($id);
+			CRUDBooster::sidebarMenu();
 	    }
 
 	    /* 
@@ -283,11 +278,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -312,9 +302,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 
@@ -327,7 +315,65 @@
 	    public function hook_after_delete($id) {
 	        //Your code here
 
-	    }
+		}
+		
+		public function create_pelaporan($id){
+			$a = DB::table('kelola_bahan_baku')->where('id' , $id)->first();
+			// dd($a);
+			$d = DB::table('cms_users')->where('id' , $a->id_cms_users)->first();
+			// dd($d);
+			$b = DB::table('perusahaan')->where('user_elic' , $d->username)->first();
+			// dd($b);
+			$c = DB::table('zat_aktif')->where('id' , $a->zat_aktif_id)->first();
+			// create master pelaporan
+			$insert = [];
+			$insert['perusahaan_id'] 	= $b->id;
+			$insert['zat_aktif_id']		= $a->zat_aktif_id;
+			$insert['zat_aktif_nama']	= $c->nama;
+			$insert['target_flag']		= 0;
+			$insert['roadmap_flag']		= 0;
+			DB::table('pelaporan')->insert($insert);
+		}
+
+		public function create_menu($id){
+			$a = DB::table('kelola_bahan_baku')->where('id' , $id)->first();
+			$b = DB::table('cms_users')->where('id' , $a->id_cms_users)->first();
+			$c = DB::table('perusahaan')->where('user_elic' , $b->username)->first();
+			// cek data submenu
+			$d = DB::table('cms_menus')->where('parent_id' , 35)->get();
+			$e = Count($d);
+			$f = DB::table('zat_aktif')->where('id' , $a->zat_aktif_id)->first();
+			// dd($c);
+			$g = DB::table('pelaporan')->where('zat_aktif_id' , $a->zat_aktif_id)
+										->where('perusahaan_id' , $c->id)
+										->first();
+										// dd($g);
+			$insert = [];
+			$insert['name'] 		= $f->nama;
+			$insert['type']			= 'URL';
+			$insert['path']			= '/bbo/detail_pelaporan/detail/'.$g->id.'';
+			$insert['color']		= 'normal';
+			$insert['icon']			= 'fa fa-list';
+			$insert['parent_id']	= 26;
+			$insert['is_active']	= 1;
+			$insert['is_dashboard']	= 0;
+			$insert['id_cms_privileges']	= 1;
+			$insert['sorting']		= $e + 1;
+			$insert['created_at']	= Carbon::now();
+			DB::table('cms_menus')->insert($insert);
+
+			$h = DB::table('cms_menus')->OrderBy('id' , 'Desc')->first();
+
+			$insert = [];
+			$insert['id_cms_menus'] = $h->id;
+			$insert['id_cms_users'] = CRUDBooster::myId();
+			DB::table('menu_user')->insert($insert);
+
+			$insert = [];
+			$insert['id_cms_menus'] = $h->id;
+			$insert['id_cms_privileges'] = 3;
+			DB::table('cms_menus_privileges')->insert($insert);
+		}
 
 
 

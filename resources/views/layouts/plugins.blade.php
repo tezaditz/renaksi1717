@@ -8,12 +8,10 @@
 <!-- jQuery 2.2.3 -->
 <script src="{{ asset ('vendor/crudbooster/assets/adminlte/plugins/jQuery/jquery-2.2.3.min.js') }}"></script>
 <!-- Highchart -->
-<script src="https://code.highcharts.com/maps/highmaps.js"></script>
-<script src="https://code.highcharts.com/maps/modules/data.js"></script>
-<script src="https://code.highcharts.com/maps/modules/drilldown.js"></script>
-<script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
-<script src="https://code.highcharts.com/mapdata/countries/id/id-all.js"></script>
+<script src="{{ asset('js/highmaps.js') }}"></script>
+<script src="{{ asset('js/offline-exporting.js') }}"></script>
+<script src="{{ asset('js/id-all.js') }}"></script>
+<script src="{{ asset('js/map/data.js') }}"></script>
 <!-- Bootstrap 3.4.1 JS -->
 <script src="{{ asset ('vendor/crudbooster/assets/adminlte/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
 <!-- AdminLTE App -->

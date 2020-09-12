@@ -41,7 +41,7 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 			$this->form[] = ['label'=>'Title','name'=>'title','type'=>'text','validation'=>'required|string|min:3|max:70','width'=>'col-sm-10','placeholder'=>'You can only enter the letter only'];
-			$this->form[] = ['label'=>'Content','name'=>'content','type'=>'wysiwyg','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Content','name'=>'content','type'=>'wysiwyg','validation'=>'required|string|min:5|max:50000','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -323,10 +323,25 @@
 
 	    }
 
-		public function show($id){
-			$data['page'] = DB::table('page')->where('id' , $id)->first();
-			// return $data;
-			$this->cbView('page.show' , $data);
+		public function showPage($id){
+			
+			$cek = DB::table('page')->where('id' , $id)->get();
+			if(Count($cek) != 0){
+				$data['page'] = DB::table('page')->where('id' , $id)->first();
+				// return 'ok';
+				$this->cbView('page.show' , $data);
+			}else{
+				$data['message'] = 'Halaman Tidak DiTemukan';
+				// $this->cbView('page.show' , $data);
+				return view('errors.404' );
+			}
+			
+		}
+
+		public function getprofileperusahaan(){
+			$data = [];
+			$data['company'] = DB::table('perusahaan')->where('id_cms_users',CRUDBooster::myId())->first();
+			$this->cbView('profile.perusahaan' , $data);
 		}
 
 

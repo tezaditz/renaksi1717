@@ -4,8 +4,10 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use Illuminate\Support\Facades\Hash;
+	use Carbon\Carbon;
 
-	class AdminPageMenuController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminCompanyController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
@@ -25,25 +27,30 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "page_menu";
+			$this->table = "perusahaan";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Menu","name"=>"cms_menus_id","join"=>"cms_menus,name"];
-			$this->col[] = ["label"=>"Page","name"=>"page_id","join"=>"page,title"];
+			$this->col[] = ["label"=>"User Elic","name"=>"user_elic"];
+			$this->col[] = ["label"=>"Nama","name"=>"nama"];
+			$this->col[] = ["label"=>"Npwp","name"=>"npwp"];
+			$this->col[] = ["label"=>"Alamat","name"=>"alamat"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','dataquery'=>'SELECT cms_menus.id as value , name as label , cms_menus_privileges.id_cms_privileges as prv FROM cms_menus join cms_menus_privileges on cms_menus.id = cms_menus_privileges.id_cms_menus  where cms_menus_privileges.id_cms_privileges = 2 and cms_menus.is_active = 1 and parent_id != 0 and icon != "fa fa-th"'];
-			$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			$this->form[] = ['label'=>'User Elic','name'=>'user_elic','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Nama','name'=>'nama','type'=>'text','validation'=>'required','width'=>'col-sm-9'];
+			$this->form[] = ['label'=>'Npwp','name'=>'npwp','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Alamat','name'=>'alamat','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ['label'=>'Menus','name'=>'cms_menus_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'cms_menus,id','datatable_format'=>'name','datatable_where'=>'CONCAT(is_active) = 1 and parent_id != 0'];
-			//$this->form[] = ['label'=>'Page','name'=>'page_id','type'=>'select','validation'=>'required','width'=>'col-sm-10','datatable'=>'page,id','datatable_format'=>'title'];
+			//$this->form[] = ["label"=>"User Elic","name"=>"user_elic","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Npwp","name"=>"npwp","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Alamat","name"=>"alamat","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
 			# OLD END FORM
 
 			/* 
@@ -253,11 +260,6 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -270,7 +272,7 @@
 	    */
 	    public function hook_after_add($id) {        
 	        //Your code here
-			
+
 	    }
 
 	    /* 
@@ -283,11 +285,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$route = '/bbo/page/show/';
-
-			DB::table('cms_menus')
-			->where('id' , $postdata['cms_menus_id'])
-			->update(['path' => $route . $postdata['page_id'] ]);
 
 	    }
 
@@ -312,9 +309,7 @@
 	    */
 	    public function hook_before_delete($id) {
 	        //Your code here
-			$a = DB::table('page_menu')->where('id' , $id)->first();
-			DB::table('cms_menus')->where('id' , $a->cms_menus_id)
-								  ->update(['path'=> '#']);
+
 	    }
 
 	    /* 
@@ -327,7 +322,84 @@
 	    public function hook_after_delete($id) {
 	        //Your code here
 
-	    }
+		}
+		
+		public function getReg(){
+			
+			$data = [];
+			$this->cbView('auth.registrasi' ,$data);
+			
+		}
+
+		public function postReg(Request $request){
+			$data = $request::all();
+
+			// return $data['password'];
+			// mengambil data dari elicensing
+			$a = DB::connection('mysql2')->table('m_trader')
+										 ->where('npwp_ori' , $data['npwp'])
+										 ->where('code' , $data['user_elic'])
+										 ->get();
+
+			if(Count($a) != 0){ 
+				// jika datanya ada makan masukan ke tabel perusahaan
+				$c = DB::table('perusahaan')->where('npwp' , $data['npwp'])
+											->where('user_elic' , $data['user_elic'])
+											->get();
+				// validasi data nya sudah tersedia atau belum pada emonev bbo
+				// jika ada akan ditolak registrasinya
+					if(Count($c) != 0){
+						$to = '/bbo/registrasi';
+						$message = 'Perusahaan Anda Sudah Terdaftar Pada Sistem ini';
+						$type	= 'info';
+						CRUDBooster::redirect($to , $message , $type);
+					}
+					
+
+				$password 		= Hash::make($data['password']);
+				$username	  	= $data['user_elic'];
+				$name 			= $data['company_name'];
+					// return $password;
+				$c = DB::connection('mysql2')->table('m_trader')
+										 ->where('npwp_ori' , $data['npwp'])
+										 ->where('code' , $data['user_elic'])
+										 ->first();
+				// INSERT TO CMS_USER
+				$insert = [];
+				$insert['name'] 				= $name;
+				$insert['photo'] 				= 'uploads/img/user.png';
+				$insert['username']				= $username;
+				$insert['password']				= $password;
+				$insert['email'] 				= $c->EMAIL;
+				$insert['id_cms_privileges'] 	= 3;
+				$insert['created_at']			= Carbon::now();
+				$insert['status']				= 'Active';
+
+				DB::table('cms_users')->insert($insert);
+				$a = DB::table('cms_users')->orderby('id' , 'desc')->first();
+				$insert = [];
+				$insert['user_elic']	= $username;
+				$insert['nama']			= $c->NAMA;
+				$insert['npwp']			= $c->NPWP_ORI;
+				$insert['alamat']		= $c->ALAMAT;
+				$insert['id_cms_users']		= $a->id;
+
+				DB::table('perusahaan')->insert($insert);
+
+				$to = '/bbo/login';
+				$message = 'Silahkan input username dan password !';
+				$type	= 'info';
+				CRUDBooster::redirect($to , $message , $type);
+
+			}else{
+				// kembali ke page registrasi
+				$to = '/bbo/registrasi';
+				
+				$message = 'Perusahaan Anda Tidak Terdaftar di Elicensing';
+				$type	= 'info';
+				CRUDBooster::redirect($to , $message , $type);
+			}
+		}
 
 
 
